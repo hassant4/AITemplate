@@ -25,7 +25,13 @@ from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 @click.option(
     "--benchmark", type=bool, default=False, help="run stable diffusion e2e benchmark"
 )
-def run(token, prompt, benchmark):
+@click.option(
+    "--width", type=int, default=512, help="width of final image - divisble by 8"
+)
+@click.option(
+    "--height", type=int, default=512, help="run stable diffusion e2e benchmark - divisble by 8"
+)
+def run(token, prompt, benchmark, width, height):
     pipe = StableDiffusionAITPipeline.from_pretrained(
         "runwayml/stable-diffusion-v1-5",
         revision="fp16",
@@ -34,7 +40,7 @@ def run(token, prompt, benchmark):
     ).to("cuda")
 
     with torch.autocast("cuda"):
-        image = pipe(prompt).images[0]
+        image = pipe(prompt, width=width, height=height).images[0]
         if benchmark:
             t = benchmark_torch_function(10, pipe, prompt)
             print(f"sd e2e: {t} ms")

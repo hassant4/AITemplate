@@ -324,10 +324,14 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
                 # the model input needs to be scaled to match the continuous ODE formulation in K-LMS
                 latent_model_input = latent_model_input / ((sigma**2 + 1) ** 0.5)
 
-            # predict the noise residual
-            noise_pred = self.unet_inference(
-                latent_model_input, t, encoder_hidden_states=text_embeddings
+            # predict the noise residual in subbatches of size 1 for the whole batch
+            noise_parts = tuple(
+                self.unet_inference(
+                    latent_model_input[i: i+1], t, encoder_hidden_states=text_embeddings[i: i+1]
+                )
+                for i in range(latent_model_input.shape[0])
             )
+            noise_pred = torch.cat(noise_parts)
 
             # perform guidance
             if do_classifier_free_guidance:

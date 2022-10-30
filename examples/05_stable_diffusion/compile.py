@@ -339,20 +339,21 @@ def compile_diffusers(token, batch_size, img2img=False, use_fp16_acc=True, conve
         use_auth_token=access_token,
     ).to("cuda")
 
-    width = 96 if img2img else 64
+    width = 96 if img2img else 128
+    height = 96 if img2img else 128
 
     # CLIP
     compile_clip(batch_size=batch_size, use_fp16_acc=use_fp16_acc, convert_conv_to_gemm=convert_conv_to_gemm)
     # UNet
     compile_unet(
-        batch_size=batch_size * 2,
+        batch_size=batch_size,
         ww=width,
+        hh=height,
         use_fp16_acc=use_fp16_acc,
         convert_conv_to_gemm=convert_conv_to_gemm,
     )
     # VAE
-    compile_vae(batch_size=batch_size, width=width, use_fp16_acc=use_fp16_acc, convert_conv_to_gemm=convert_conv_to_gemm)
-
+    compile_vae(batch_size=batch_size, width=width, height=height, use_fp16_acc=use_fp16_acc, convert_conv_to_gemm=convert_conv_to_gemm)
 
 if __name__ == "__main__":
     compile_diffusers()
