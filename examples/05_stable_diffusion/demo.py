@@ -26,10 +26,10 @@ from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
     "--benchmark", type=bool, default=False, help="run stable diffusion e2e benchmark"
 )
 @click.option(
-    "--width", type=int, default=512, help="width of final image - divisble by 8"
+    "--width", type=int, default=1024, help="width of final image - divisble by 8"
 )
 @click.option(
-    "--height", type=int, default=512, help="run stable diffusion e2e benchmark - divisble by 8"
+    "--height", type=int, default=1024, help="run stable diffusion e2e benchmark - divisble by 8"
 )
 def run(token, prompt, benchmark, width, height):
     pipe = StableDiffusionAITPipeline.from_pretrained(
